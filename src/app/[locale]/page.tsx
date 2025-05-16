@@ -1,18 +1,26 @@
 'use client'
 import { useLocale, useTranslations } from "next-intl";
 
-import { Link, usePathname, useRouter } from "@/i18n/navigation";
-import { cn } from "@/lib/utils";
+import { usePathname, useRouter } from "@/i18n/navigation";
+
 
 import { useTransition } from "react";
-import { Button } from "@/components/ui/button";
+
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { routing } from "@/i18n/routing";
+
 
 
 export default function Home() {
 
   const t = useTranslations('home')
-  const local = useLocale()
-
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const pathname = usePathname();
@@ -20,9 +28,11 @@ export default function Home() {
   const handleLocaleChange = (newLocale: string) => {
     startTransition(() => {
       router.replace(pathname, { locale: newLocale });
-      router.refresh()
+
     });
   };
+
+  const local = useLocale()
 
   return (
     <div className="flex items-center justify-center flex-col">
@@ -32,15 +42,25 @@ export default function Home() {
       </main>
 
       <div className="flex items-center justify-center w-full mt-10 gap-5">
-        <Button onClick={() => handleLocaleChange('en')} className={cn("border-1 p-2 ",
-          local === 'en' ? "bg-black text-white" : "bg-white text-black"
-        )}>English</Button>
-        <Button onClick={() => handleLocaleChange('si')} className={cn("border-1 p-2 ",
-          local === 'si' ? "bg-black text-white" : "bg-white text-black"
-        )}>Sinhala</Button>
-        <Button onClick={() => handleLocaleChange('ja')} className={cn("border-1 p-2 ",
-          local === 'ja' ? "bg-black text-white" : "bg-white text-black"
-        )}>Japanise</Button>
+        <Select value={local} onValueChange={(val) => {
+          handleLocaleChange(val)
+        }}>
+          <SelectTrigger className="">
+            <SelectValue placeholder="Change Local" />
+          </SelectTrigger>
+          <SelectContent>
+            {routing.locales.map((local) => (
+              <SelectItem
+                key={local}
+                value={local}
+
+              >
+                {local}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
       </div>
 
     </div>
